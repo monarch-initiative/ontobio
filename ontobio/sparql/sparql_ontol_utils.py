@@ -362,7 +362,7 @@ def anyont_fetch_label(id):
     """.format(iri=iri)
     bindings = run_sparql(query)
     rows = [r['label']['value'] for r in bindings]
-    return rows[0]
+    return rows[0] if len(rows) > 0 else None
 
 def batch_fetch_labels(ids):
     """
