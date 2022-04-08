@@ -376,6 +376,42 @@ def batch_fetch_labels(ids):
     return m
 
 
+def anyont_fetch_id(label):
+    """
+    fetch all IDs from the rdfs:label assertions for a given label
+    """
+
+    # note that if you want to do case-insensitive matching between the query
+    # label and the contents of the database, you *could* do this:
+    # SELECT distinct ?iri WHERE {
+    #     ?iri rdfs:label ?label
+    #     FILTER(
+    #       lcase(str(?label)) =
+    #       lcase(str("{label}"^^xsd:string))
+    #     )
+    # }
+    # but it's very slow, assumedly due to a missing lcase(str()) index on the
+    # label field.
+
+    query = """
+    SELECT distinct ?iri WHERE {{
+        ?iri rdfs:label "{label}"^^xsd:string
+    }}
+    """.format(label=label)
+    bindings = run_sparql(query)
+    rows = [r['iri']['value'] for r in bindings]
+    return rows
+
+def batch_fetch_ids(labels):
+    """
+    fetch all CURIEs for a set of rdfs:label assertions
+    """
+    m = {}
+    for label in labels:
+        ret_ids = anyont_fetch_id(label)
+        # if ret_id is not None:
+        m[label] = ret_ids
+    return m
 
 
 
