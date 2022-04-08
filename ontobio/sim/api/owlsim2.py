@@ -143,6 +143,11 @@ def get_owlsim_stats(url) -> Tuple[IcStatistic, Dict[str, IcStatistic]]:
             json_exc.pos
         )
 
+    except KeyError as key_exc:
+        raise Exception(
+            "owlsim2 response missing required key: {} (URL: {}, response: {})".format(key_exc, url, sim_response)
+        )
+
     return global_stats, category_stats
 
 
